@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const assert = require('node:assert/strict');
+const root = path.resolve(__dirname, '..');
+const js = fs.readFileSync(path.join(root, 'blazarlab.js'), 'utf8');
+const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
+const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+assert.match(js, /function schedulePopulationMetricsBatch\(\)/, 'as métricas populacionais devem usar agendamento em lotes');
+assert.match(js, /window\.requestIdleCallback\(runBatch, \{ timeout: 200 \}\)/, 'deve preferir tempo ocioso do navegador');
+assert.match(js, /if \(document\.hidden\) return/, 'o processamento deve pausar com a página oculta');
+assert.match(js, /if \(disclosure && !disclosure\.open\) return/, 'a tabela fechada não deve construir o DOM da tabela');
+assert.match(js, /function setPopulationPending\(svgId/, 'gráficos populacionais devem indicar cálculo pendente em vez de exibir amostras parciais');
+assert.match(js, /if \(!populationMetricsFinished\) \{ setPopulationPending\('fisherPlot'\); return; \}/, 'o plano populacional deve esperar dados completos');
+assert.match(js, /renderedRevision/, 'a tabela deve evitar renderização repetida quando os dados não mudaram');
+assert.match(css, /\.pattern-points i\{[^}]*animation:point-pulse \.7s ease-in-out 3 alternate both\}/, 'a pulsação deve ter número finito de iterações');
+assert.match(js, /opensDetailedSimulation = button\.classList\.contains\('method-visual-trigger-chart'\)/, 'o diagrama deve separar a simulação detalhada do feedback do ícone');
+assert.match(html, /id="populationComputeStatus" aria-live="polite"/, 'o estado de cálculo em segundo plano deve ser anunciado');
+console.log('OK: cálculos em lotes, pausa em aba oculta, tabelas sob demanda e animações finitas.');

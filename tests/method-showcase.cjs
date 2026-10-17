@@ -1,0 +1,34 @@
+#!/usr/bin/env node
+'use strict';
+const fs=require('node:fs');
+const path=require('node:path');
+const assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const css=fs.readFileSync(path.join(root,'styles.css'),'utf8');
+const js=fs.readFileSync(path.join(root,'blazarlab.js'),'utf8');
+assert.match(html, /class="method-name">Sample Entropy <span>\(SampEn\)<\/span>/);
+assert.match(html, /class="method-name">Fisher–Shannon/);
+assert.match(html, /class="method-name">Multiscale Entropy/);
+assert.equal((html.match(/class="method-icon method-visual-trigger/g)||[]).length,3,'os três ícones precisam responder a clique/toque');
+assert.equal((html.match(/class="method-animated-hint method-visual-trigger method-visual-trigger-chart/g)||[]).length,3,'os três diagramas devem ter animação acionável');
+assert.match(html, /aria-live="polite" aria-atomic="true" id="methodAnimationStatus"/);
+assert.match(css, /\.abstract-list>\.abstract-card:last-child\{grid-column:1 \/ -1;width:calc\(50% - 7\.5px\);justify-self:center\}/);
+assert.match(css, /\.nav-toggle\{width:44px;height:44px;min-width:44px;min-height:44px;padding:0;display:none;flex-direction:column/);
+assert.match(js, /const w=1020,h=720,ml=155,mr=18,mt=47,mb=35/,'células do heatmap devem manter altura de toque próxima de 24 px');
+assert.match(js, /function isCompactViewport\(target\)/);
+assert.match(js, /new ResizeObserver\(entries =>/);
+assert.match(js, /function initMethodVisualAnimations\(\)/);
+assert.match(js, /function initActiveNavigation\(\)/);
+assert.match(js, /compactLens \? 'Índice temporal · trechos exemplificados'/);
+console.log('OK: vitrine animada, hierarquia dos métodos, triângulo de resumos, menu e geometria de gráficos no BlazarLab 1.3.19.');
+
+assert.match(html, /id="blazar-primer"/);
+assert.match(html, /O que é um blazar\?/);
+assert.match(html, /Por que estudar a variabilidade\?/);
+assert.match(js, /function methodSimulationMarkup\(method\)/);
+assert.match(js, /SampEn = −ln\(A\/B\)/);
+assert.match(js, /Da curva à distribuição/);
+assert.match(js, /Uma série, várias escalas/);
+assert.match(js, /width: 430, height: 350/);
+console.log('OK: trilha didática, simulações específicas dos três métodos e mapa de sensibilidade móvel sem corte horizontal.');

@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const assert = require('node:assert/strict');
+const root = path.resolve(__dirname, '..');
+const js = fs.readFileSync(path.join(root, 'blazarlab.js'), 'utf8');
+const version = fs.readFileSync(path.join(root, 'VERSION'), 'utf8').trim();
+const start = js.indexOf('  function exportSvgPng(svg, filename) {');
+const end = js.indexOf('\n  function initializeChartInteractions(){', start);
+assert.ok(start >= 0 && end > start, 'a função de exportação PNG deve existir');
+const fn = js.slice(start, end);
+assert.equal(version, '1.3.19', 'versão de correção correta');
+assert.match(fn, /document\.documentElement\.dataset\.theme === 'light'/, 'tema deve ser consultado no momento da exportação');
+assert.match(fn, /background: '#FFFFFF'/, 'PNG claro deve usar fundo claro');
+assert.match(fn, /background: '#101A2B'/, 'PNG escuro deve manter fundo escuro');
+assert.match(fn, /grid: '#CBD5E1'/, 'grade clara precisa de contraste com fundo branco');
+assert.match(fn, /label: '#334155'/, 'rótulos claros devem usar tinta escura');
+assert.match(fn, /context\.fillStyle = palette\.background/, 'o canvas deve usar o mesmo fundo da paleta');
+assert.match(fn, /const lightTextColors = new Map/, 'cores de texto claras herdadas devem ser tratadas');
+assert.match(fn, /LIGHT_CHART_COLORS\[normalized\]/, 'cores comuns de séries devem ser adaptadas no tema claro');
+assert.match(fn, /const svgText = new XMLSerializer\(\)\.serializeToString\(clone\)/, 'o SVG clonado deve ser serializado');
+console.log('OK: exportação PNG configura paleta de tema claro/escuro e adapta cores explícitas conhecidas.');
